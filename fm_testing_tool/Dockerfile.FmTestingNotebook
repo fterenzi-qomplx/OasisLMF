@@ -1,0 +1,19 @@
+FROM coreoasis/model_worker:1.13.0
+WORKDIR /home/run
+
+#RUN apt-get update && apt-get install -y --no-install-recommends <needed packages> && \
+#    rm -rf /var/lib/apt/lists/*
+
+COPY ["./requirements.txt", \
+      "./data/*", \
+      "./*.ipynb", "./"]
+RUN pip3 install -r requirements.txt
+RUN rm requirements.txt
+
+COPY ./set_jupyter_password.py /usr/local/bin/
+COPY ./startup.sh /usr/local/bin/
+RUN mkdir -p /root/.jupyter/
+RUN touch /root/.jupyter/jupyter_notebook_config.json
+
+EXPOSE 8888
+ENTRYPOINT startup.sh
